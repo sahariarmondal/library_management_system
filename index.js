@@ -7,7 +7,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-  res.send('Hello World! it is library management system');
+  res.send('Hello World! it is library management system this is for testing purpose');
 });
 
 app.listen(port, () => {
