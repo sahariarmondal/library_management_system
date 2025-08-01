@@ -2,22 +2,17 @@ const express = require('express');
 const sequelize = require('./config/db_config.js');
 const {  Student, Course, Book, Author, BookCopy, StudentCart, BookAllocation, Fine } = require('./models/association.js');
 const Admin = require('./models/admin.js');
-// const Author = require('./models/author.js');
-// const Book = require('./models/book.js');
+const bookRouter = require('./routes/bookRoute.js');
 require('dotenv').config();
 const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
 const insertDummyData = require('./entry.js');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use('/api/book', bookRouter);
 
-// Connect to the database using environment variables
-const dbPassword = process.env.DB_PASSWORD;
-const dbUser = process.env.DB_USER;
-const dbDatabase = process.env.DB_DATABASE;
-const dbHost = process.env.DB_HOST;
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
@@ -30,8 +25,6 @@ const startServer = async () => {
 
     await sequelize.sync({ alter: true}); 
     console.log('All models synchronized.');
-
-    // insertDummyData();
 
     app.listen(port, () => {
       console.log(`Server is running at http://localhost:${port}`);
@@ -47,4 +40,3 @@ startServer();
 app.get('/', (req, res) => {
   res.send('Welcome to the Library Management System API');
 })
-
