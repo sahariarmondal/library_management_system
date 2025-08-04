@@ -1,15 +1,8 @@
-const Book  = require('../models/book');
-const { Op } = require('sequelize');
+const Book = require("../models/book");
+const { Op } = require("sequelize");
 
 const addBook = async (data) => {
-  const {
-    book_id,
-    title,
-    isbn,
-    genre,
-    published_year,
-    language
-  } = data;
+  const { book_id, title, isbn, genre, published_year, language } = data;
 
   if (!book_id || !title || !isbn || !genre) {
     throw new Error("Required fields are missing");
@@ -21,7 +14,7 @@ const addBook = async (data) => {
     isbn,
     genre,
     published_year,
-    language
+    language,
   });
 
   return book;
@@ -35,15 +28,28 @@ const getBookByTitle = async (title) => {
   const books = await Book.findAll({
     where: {
       title: {
-        [Op.like]: `%${title}%`
-      }
-    }
+        [Op.like]: `%${title}%`,
+      },
+    },
   });
 
   return books;
 };
 
+const deleteBookById = async (id) => {
+  if (!id) {
+    throw new Error("Book ID is required for deletion of the book");
+  }
+  const bookToBeDeleted = await Book.findByPk(id);
+  if (!bookToBeDeleted) {
+    throw new Error("Book Id is not valid");
+  }
+  await bookToBeDeleted.destroy();
+  return { message: "Book destroyed successfully" };
+};
+
 module.exports = {
   addBook,
-  getBookByTitle
+  getBookByTitle,
+  deleteBookById,
 };
