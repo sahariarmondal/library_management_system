@@ -14,7 +14,8 @@ Student.belongsTo(Course, {
   foreignKey: {
     name: 'course_id',
     allowNull: false,
-    onDelete: 'RESTRICT'
+    onDelete: 'RESTRICT',
+    onUpdate: 'CASCADE'
   },
   as: 'course_student'
   
@@ -33,13 +34,13 @@ Course.hasMany(Student, {
 Book.belongsToMany(Author, {
   through: BookAuthor,
   foreignKey: 'book_id',
-  otherKey: 'author_id',
+  otherKey: 'auth_id',
   as: 'authors_books'
 });
 
 Author.belongsToMany(Book, {
   through: BookAuthor,
-  foreignKey: 'author_id',
+  foreignKey: 'auth_id',
   otherKey: 'book_id',
   as: 'books_authors'
 });
@@ -47,6 +48,8 @@ Author.belongsToMany(Book, {
 //definig book and book copy relationship 1:M
 BookCopy.belongsTo(Book, {
   foreignKey: 'book_id',  
+  onDelete: 'CASCADE', //If a book is deleted then corrosponding all book copies will be deleted.
+  onUpdate: 'CASCADE',
   as: 'book_copy'
 });
 
@@ -77,33 +80,44 @@ Book.belongsToMany(Student, {
 
 //Book Allocation relationships
 // Student hasMany BookAllocations
+BookAllocation.belongsTo(Student, {
+  foreignKey: 'student_id',
+  as: 'student',
+  onDelete: 'RESTRICT',
+  onUpdate: 'CASCADE'
+});
+
 Student.hasMany(BookAllocation, {
   foreignKey: 'student_id',
   as: 'allocations_student'
 });
 
 
-BookAllocation.belongsTo(Student, {
-  foreignKey: 'student_id',
-  as: 'student'
+
+
+// BookCopy hasMany BookAllocation'
+
+BookAllocation.belongsTo(BookCopy, {
+  foreignKey: 'copy_id',
+  as: 'book_copy',
+  onDelete: 'RESTRICT',
+  onUpdate: 'CASCADE'
 });
 
-// BookCopy hasMany BookAllocation
 BookCopy.hasMany(BookAllocation, {
   foreignKey: 'copy_id',
   as: 'allocations_copies'
 });
 
-BookAllocation.belongsTo(BookCopy, {
-  foreignKey: 'copy_id',
-  as: 'book_copy'
-});
+
 
 
 // Fines and book allocation and student relationship
 Fine.belongsTo(BookAllocation, {
   foreignKey: 'allocation_id',
-  as: 'allocation_fine'
+  as: 'allocation_fine',
+  onDelete: 'RESTRICT',
+  onUpdate: 'CASCADE'
 });
 BookAllocation.hasOne(Fine, {
   foreignKey: 'allocation_id',
@@ -114,7 +128,9 @@ BookAllocation.hasOne(Fine, {
 
 Fine.belongsTo(Student, {
   foreignKey: 'student_id',
-  as: 'student_fine'
+  as: 'student_fine',
+  onDelete: 'RESTRICT',
+  onUpdate: 'CASCADE'
 });
 
 Student.hasMany(Fine, {
