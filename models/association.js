@@ -6,33 +6,53 @@ const BookCopy = require("./book_copy.js");
 const StudentCart = require("./student_cart");
 const BookAllocation = require("./book_allocation.js");
 const Fine = require("./fine.js");
+const BookAuthor = require("./book_author.js");
 
 
 //Mapping of the Student and Course models M:1
 Student.belongsTo(Course, {
-  foreignKey: 'course_id',
-  as: 'course'
+  foreignKey: {
+    name: 'course_id',
+    allowNull: false,
+    onDelete: 'RESTRICT'
+  },
+  as: 'course_student'
+  
 });
 
 Course.hasMany(Student, {
   foreignKey: 'course_id',
-  as: 'students'
+  as: 'students_course'
 });
 
 
 // Defining many-to-many relationship between Book and Author
-Book.belongsToMany(Author, { through: "BookAuthors" });
-Author.belongsToMany(Book, { through: "BookAuthors" });
+// Book.belongsToMany(Author, { through: "BookAuthors" });
+// Author.belongsToMany(Book, { through: "BookAuthors" });
+
+Book.belongsToMany(Author, {
+  through: BookAuthor,
+  foreignKey: 'book_id',
+  otherKey: 'author_id',
+  as: 'authors_books'
+});
+
+Author.belongsToMany(Book, {
+  through: BookAuthor,
+  foreignKey: 'author_id',
+  otherKey: 'book_id',
+  as: 'books_authors'
+});
 
 //definig book and book copy relationship 1:M
 BookCopy.belongsTo(Book, {
   foreignKey: 'book_id',  
-  as: 'book'
+  as: 'book_copy'
 });
 
 Book.hasMany(BookCopy, { 
   foreignKey: 'book_id',
-  as: 'copies'
+  as: 'copies_book'
 });
 
 
@@ -41,24 +61,25 @@ Book.hasMany(BookCopy, {
 Student.belongsToMany(Book, {
   through: StudentCart,
   foreignKey: "student_id",
-  otherKey: "book_id"
+  otherKey: "book_id",
+  as: 'books_students'
 });
 
 Book.belongsToMany(Student, {
   through: StudentCart,
   foreignKey: "book_id",
-  otherKey: "student_id"
+  otherKey: "student_id",
+  as: 'students_books'
 });
 
 
 
 
 //Book Allocation relationships
-
 // Student hasMany BookAllocations
 Student.hasMany(BookAllocation, {
   foreignKey: 'student_id',
-  as: 'allocations'
+  as: 'allocations_student'
 });
 
 
@@ -70,35 +91,35 @@ BookAllocation.belongsTo(Student, {
 // BookCopy hasMany BookAllocation
 BookCopy.hasMany(BookAllocation, {
   foreignKey: 'copy_id',
-  as: 'allocations'
+  as: 'allocations_copies'
 });
 
 BookAllocation.belongsTo(BookCopy, {
   foreignKey: 'copy_id',
-  as: 'bookCopy'
+  as: 'book_copy'
 });
 
 
 // Fines and book allocation and student relationship
 Fine.belongsTo(BookAllocation, {
   foreignKey: 'allocation_id',
-  as: 'allocation'
+  as: 'allocation_fine'
 });
 BookAllocation.hasOne(Fine, {
   foreignKey: 'allocation_id',
-  as: 'fine'
+  as: 'fine_allocation'
 });
 
 // Fine belongs to Student
 
 Fine.belongsTo(Student, {
   foreignKey: 'student_id',
-  as: 'student'
+  as: 'student_fine'
 });
 
 Student.hasMany(Fine, {
   foreignKey: 'student_id',
-  as: 'fines'
+  as: 'fine_student'
 });
 
 
@@ -106,4 +127,4 @@ Student.hasMany(Fine, {
 
 
 
-module.exports = { Student, Course, Book, Author, BookCopy, StudentCart, BookAllocation, Fine};
+module.exports = { Student, Course, Book, Author, BookCopy, StudentCart, BookAllocation, Fine, BookAuthor};
