@@ -5,11 +5,10 @@ const BookCopy = sequelize.define("BookCopy", {
   copy_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
   },
   book_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    primaryKey: true,
   },
   availability_status: {
     type: DataTypes.ENUM("available", "issued", "reserved"),
@@ -18,7 +17,7 @@ const BookCopy = sequelize.define("BookCopy", {
   }
 }, {
   tableName: "book_copies",
-  timestamps: true,
+  timestamps: false,
 });
 
 module.exports = BookCopy;

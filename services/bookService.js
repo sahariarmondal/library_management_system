@@ -1,6 +1,7 @@
 const sequelize = require("../config/db_config");
 const Author = require("../models/author");
 const Book = require("../models/book");
+const BookCopy = require("../models/book_copy");
 const { Op } = require("sequelize");
 
 //FUNCTION TO ADD THE BOOK
@@ -40,6 +41,8 @@ const getBookByTitle = async (title) => {
   return books;
 };
 
+
+
 //SERVICE TO DELETE A BOOK
 const deleteBookById = async (id) => {
   if (!id) {
@@ -71,7 +74,7 @@ const updateBookById = async (id, updatedData) => {
 };
 
 
-//FUNCTION TO ADD THE BOOKS WITH AUTHORS
+//FUNCTION TO ADD THE BOOKS WITH AUTHORS AND COPY ID WILL AUTOMATICALLY GENERATED
 const addBookWithAuthors = async(bookDetails, authorsIds) => {
   const t = await sequelize.transaction();
 
@@ -86,15 +89,30 @@ const addBookWithAuthors = async(bookDetails, authorsIds) => {
      });
 
      if(authors.length !== authorsIds.length){
-      throw new Error("Some Author Ids are Invalid");
+      throw new Error("Some Author Ids are Invalid or Duplicate Authors");
      }
 
      await newBook.addAuthors(authors, {transaction: t});
 
+     const quantity = bookDetails.total_copies || 1;
+
+    if (quantity > 0) {
+      const bookCopies = [];
+
+      for (let i = 0; i < quantity; i++) {
+        bookCopies.push({
+          book_id: newBook.book_id,
+          copy_id: i+1
+        });
+      }
+
+      await BookCopy.bulkCreate(bookCopies, { transaction: t });
+    }
+
      t.commit();
 
      return {
-      message: "Book added with authors",
+      message: "Book added with authors and copies",
       data: newBook
      }
   }
@@ -104,10 +122,38 @@ const addBookWithAuthors = async(bookDetails, authorsIds) => {
   }
 };
 
+
+
+const getBookByFullTitleWithAuthors = async (title) => {
+  try {
+    const books = await Book.findAll({
+      where: {
+        title: {
+          [Op.eq]: title   // Case-insensitive full match
+        }
+      },
+      include: [
+        {
+          model: Author,
+          as: 'authors',
+          through: { attributes: [] },
+          attributes: ['auth_id', 'first_name', 'last_name']
+        }
+      ]
+    });
+
+    return books;
+  } catch (err) {
+    throw new Error(`Failed to fetch books: ${err.message}`);
+  }
+};
+
+
 module.exports = {
   addBook,
   getBookByTitle,
   deleteBookById,
   updateBookById,
-  addBookWithAuthors
+  addBookWithAuthors,
+  getBookByFullTitleWithAuthors
 };

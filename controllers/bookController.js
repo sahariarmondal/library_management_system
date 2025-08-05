@@ -101,10 +101,45 @@ const addBookWithAuthorsController = async(req, res) => {
   }
 }
 
+const getBookByFullTitleWithAuthorsController = async (req, res) => {
+  try {
+    const { title } = req.query;
+
+    if (!title) {
+      return res.status(400).json({
+        success: false,
+        message: "Title is required",
+      });
+    }
+
+    const data = await bookService.getBookByFullTitleWithAuthors(title);
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No book found with the given title",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Books fetched successfully",
+      data: data,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `Error: ${err.message}`,
+    });
+  }
+};
+
+
 module.exports = {
   addBookController,
   getBookByTitleController,
   deleteBookByIdController,
   updateBookController,
-  addBookWithAuthorsController
+  addBookWithAuthorsController,
+  getBookByFullTitleWithAuthorsController
 };

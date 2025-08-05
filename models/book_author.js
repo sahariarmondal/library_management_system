@@ -6,7 +6,7 @@ const Author = require("./author.js");
 const BookAuthor = sequelize.define('BookAuthor', {
   book_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    primaryKey: true,
     references: {
       model: 'books',
       key: 'book_id'
@@ -16,7 +16,7 @@ const BookAuthor = sequelize.define('BookAuthor', {
   },
   auth_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    primaryKey: true,
     references: {
       model: 'authors',
       key: 'auth_id'
