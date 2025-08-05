@@ -115,33 +115,84 @@ const deleteBookByIdController = async (req, res) => {
   }
 };
 
-//Need to work on this function
-const getAllBooksWithAuthorAndCopies = async (req, res) => {
-  try {
-    const { author, genre, status } = req.query;
+const updateBookController = async (req, res) => {
+  try{
+    const {id } = req.params;
+    const updatedData = req.body;
+    if(!updatedData || Object.keys(updatedData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Updated field is empty"
+      });
+    }
+    const result = await bookService.updateBookById(id, updatedData);
 
-    const where = {};
-    if (author) where["$authors.first_name$"] = { [Op.iLike]: `%${author}%` };
-    if (genre) where.genre = genre;
-    if (status) where["$book_copies.availability_status$"] = status;
-
-    const books = await Book.findAll({
-      where,
-      include: [
-        { model: Author, as: "authors", attributes: ["first_name"] },
-        { model: BookCopy, as: "copies", attributes: ["availability_status"] },
-      ],
+    return res.status(200).json({
+      success : true,
+      message: result.message,
+      data: result.data
     });
 
-    res.json(books);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
   }
-};
+  catch(error){
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+const addBookWithAuthorsController = async(req, res) => {
+  try{
+    const {bookData, authorIds} = req.body;
+    if(!bookData){
+      throw new Error("Book data is missing");
+    }
+
+    const result = await bookService.addBookWithAuthors(bookData, authorIds);
+
+    res.status(201).json({
+      success: true,
+      message: result.message,
+      data: result.data
+    });
+  }
+  catch(err){
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+}
+
+//Need to work on this function
+// const getAllBooksWithAuthorAndCopies = async (req, res) => {
+//   try {
+//     const { author, genre, status } = req.query;
+
+//     const where = {};
+//     if (author) where["$authors.first_name$"] = { [Op.iLike]: `%${author}%` };
+//     if (genre) where.genre = genre;
+//     if (status) where["$book_copies.availability_status$"] = status;
+
+//     const books = await Book.findAll({
+//       where,
+//       include: [
+//         { model: Author, as: "authors", attributes: ["first_name"] },
+//         { model: BookCopy, as: "copies", attributes: ["availability_status"] },
+//       ],
+//     });
+
+//     res.json(books);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
 
 module.exports = {
   addBookController,
   getBookByTitleController,
   deleteBookByIdController,
-  getAllBooksWithAuthorAndCopies,
+  updateBookController,
+  addBookWithAuthorsController
 };

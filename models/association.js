@@ -17,13 +17,13 @@ Student.belongsTo(Course, {
     onDelete: 'RESTRICT',
     onUpdate: 'CASCADE'
   },
-  as: 'course_student'
+  as: 'course'
   
 });
 
 Course.hasMany(Student, {
   foreignKey: 'course_id',
-  as: 'students_course'
+  as: 'students'
 });
 
 
@@ -35,14 +35,14 @@ Book.belongsToMany(Author, {
   through: BookAuthor,
   foreignKey: 'book_id',
   otherKey: 'auth_id',
-  as: 'authors_books'
+  as: 'authors'
 });
 
 Author.belongsToMany(Book, {
   through: BookAuthor,
   foreignKey: 'auth_id',
   otherKey: 'book_id',
-  as: 'books_authors'
+  as: 'books'
 });
 
 //definig book and book copy relationship 1:M
@@ -50,12 +50,12 @@ BookCopy.belongsTo(Book, {
   foreignKey: 'book_id',  
   onDelete: 'CASCADE', //If a book is deleted then corrosponding all book copies will be deleted.
   onUpdate: 'CASCADE',
-  as: 'book_copy'
+  as: 'book'
 });
 
 Book.hasMany(BookCopy, { 
   foreignKey: 'book_id',
-  as: 'copies_book'
+  as: 'copies'
 });
 
 
