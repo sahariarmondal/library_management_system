@@ -3,7 +3,6 @@ const bookRouter = express.Router();
 const { addBookController, getBookByTitleController, deleteBookByIdController, updateBookController, addBookWithAuthorsController } = require("../controllers/bookController");
 
 bookRouter.get("/get", getBookByTitleController);
-// bookRouter.get("/getall", getAllBooksWithAuthorAndCopies);
 bookRouter.post("/add", addBookController);
 bookRouter.delete("/:id",deleteBookByIdController);
 bookRouter.put("/:id",updateBookController);

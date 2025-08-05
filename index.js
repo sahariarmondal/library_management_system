@@ -3,6 +3,7 @@ const sequelize = require('./config/db_config.js');
 const {  Student, Course, Book, Author, BookCopy, StudentCart, BookAllocation, Fine } = require('./models/association.js');
 const Admin = require('./models/admin.js');
 const bookRouter = require('./routes/bookRoute.js');
+const authorRouter = require('./routes/authorRoute.js');
 require('dotenv').config();
 const app = express();
 const port = 3000;
@@ -12,6 +13,7 @@ const insertDummyData = require('./entry.js');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/book', bookRouter);
+app.use('/api/author', authorRouter);
 
 
 app.listen(port, () => {
