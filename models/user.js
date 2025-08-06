@@ -1,6 +1,7 @@
 const sequelize = require("../config/db_config");
 const { DataTypes } = require("sequelize");
 
+//This is created for authentication purpose
 const User = sequelize.define("User", {
   user_id: {
     type: DataTypes.INTEGER,
