@@ -11,7 +11,7 @@ const BookAuthor = sequelize.define('BookAuthor', {
       model: 'books',
       key: 'book_id'
     },
-    onDelete: 'RESTRICT',
+    onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
   },
   auth_id: {

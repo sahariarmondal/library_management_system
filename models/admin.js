@@ -25,11 +25,17 @@ const Admin = sequelize.define("Admin", {
       isEmail: true,
     },
   },
-
-  password: {
-    type: DataTypes.STRING,
+  user_id: {
+    type: DataTypes.INTEGER,
     allowNull: false,
+    unique: true,
+    references: {
+      model: "users",
+      key: "user_id"
+    },
+    onDelete: "CASCADE",
   },
+
 }, {
   tableName: "admins",
   timestamps: true,

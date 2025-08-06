@@ -1,4 +1,3 @@
-// const sequelize = require("../config/db_config");
 const Author = require("../models/author");
 const Book = require("../models/book");
 

@@ -28,11 +28,11 @@ const BookAllocation = sequelize.define("BookAllocation", {
         defaultValue: "issued",
         allowNull: false,
     },
-    duedate: {
+    due_date: {
         type: DataTypes.DATE,
         allowNull: true,
     },
-    isReturned: {
+    is_returned: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,   
         allowNull: false,

@@ -7,6 +7,8 @@ const StudentCart = require("./student_cart");
 const BookAllocation = require("./book_allocation.js");
 const Fine = require("./fine.js");
 const BookAuthor = require("./book_author.js");
+const User = require("./user.js");
+const Admin = require("./admin.js");
 
 
 //Mapping of the Student and Course models M:1
@@ -82,14 +84,14 @@ Book.belongsToMany(Student, {
 // Student hasMany BookAllocations
 BookAllocation.belongsTo(Student, {
   foreignKey: 'student_id',
-  as: 'student',
+  as: 'student_allocation',
   onDelete: 'RESTRICT',
   onUpdate: 'CASCADE'
 });
 
 Student.hasMany(BookAllocation, {
   foreignKey: 'student_id',
-  as: 'allocations_student'
+  as: 'allocation_students'
 });
 
 
@@ -99,14 +101,14 @@ Student.hasMany(BookAllocation, {
 
 BookAllocation.belongsTo(BookCopy, {
   foreignKey: 'copy_id',
-  as: 'book_copy',
+  as: 'copy_allocation',
   onDelete: 'RESTRICT',
   onUpdate: 'CASCADE'
 });
 
 BookCopy.hasMany(BookAllocation, {
   foreignKey: 'copy_id',
-  as: 'allocations_copies'
+  as: 'allocation_copys'
 });
 
 
@@ -137,6 +139,25 @@ Student.hasMany(Fine, {
   foreignKey: 'student_id',
   as: 'fine_student'
 });
+
+User.hasOne(Student, {
+  foreignKey: "user_id",
+  as: "student_profile"
+});
+Student.belongsTo(User, {
+  foreignKey: "user_id",
+  as: "user"
+});
+
+User.hasOne(Admin, {
+  foreignKey: "user_id",
+  as: "admin_profile"
+});
+Admin.belongsTo(User, {
+  foreignKey: "user_id",
+  as: "user"
+});
+
 
 
 

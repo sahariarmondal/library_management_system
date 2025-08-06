@@ -23,10 +23,6 @@ const Student = sequelize.define("Student", {
       isEmail: true,
     },
   },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
   phone_no: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -51,7 +47,17 @@ const Student = sequelize.define("Student", {
    status: {
     type: DataTypes.ENUM('Active', 'Inactive'),
     allowNull: false,
-  }
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    unique: true,
+    references: {
+      model: "users",
+      key: "user_id"
+    },
+    onDelete: "CASCADE",
+  },
 }, {
   timestamps: true,
   tableName: "students",
