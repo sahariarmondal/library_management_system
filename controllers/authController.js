@@ -2,39 +2,46 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const Admin = require("../models/admin");
 const generateToken = require("../utility/utility");
-// const createStudentController = require("../controllers/studentController");
 const studentService = require("../services/studentService");
 const adminService = require("../services/adminService");
 const sequelize = require("../config/db_config");
+const { Op } = require("sequelize");
+
 
 // Register
 const register = async (req, res) => {
   const t = await sequelize.transaction();
   try {
-    const { email, password, role } = req.body;
+    const { email, password, role, phone_no } = req.body;
 
     if (!["student", "admin"].includes(role)) {
       return res.status(400).json({ error: "Invalid role" });
     }
 
     const existingUser = await User.findOne({
-      where: { email },
-      transaction: t,
-    });
+  where: {
+    [Op.or]: [
+      { email: email },
+      { phone_no: phone_no }
+    ]
+  },
+  transaction: t,
+});
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create(
-      { email, password: hashedPassword, role },
+      { email, password: hashedPassword, role, phone_no },
       { transaction: t }
     );
     let createdEntity;
     if (role === "student") {
       const studentData = {
         ...req.body.extraData,
-        email: req.body.email, // required field in Student model
+        email: req.body.email,
+        phone_no: req.body.phone_no,
         user_id: newUser.user_id, // required foreign key
       };
       console.log(studentData);
@@ -45,6 +52,7 @@ const register = async (req, res) => {
       const adminData = {
         ...req.body.extraData,
         email: req.body.email,
+        phone_no: req.body.phone_no,
         user_id: newUser.user_id,
       };
 

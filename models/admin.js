@@ -25,6 +25,11 @@ const Admin = sequelize.define("Admin", {
       isEmail: true,
     },
   },
+  phone_no:{
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  },
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
