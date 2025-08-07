@@ -4,16 +4,18 @@ const {  Student, Course, Book, Author, BookCopy, StudentCart, BookAllocation, F
 const Admin = require('./models/admin.js');
 const bookRouter = require('./routes/bookRoute.js');
 const authorRouter = require('./routes/authorRoute.js');
+const authRouter = require('./routes/authRoute.js');
 require('dotenv').config();
 const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
-const insertDummyData = require('./entry.js');
+// const insertDummyData = require('./entry.js');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/book', bookRouter);
 app.use('/api/author', authorRouter);
+app.use('/api/auth/', authRouter);
 
 
 app.listen(port, () => {
@@ -25,7 +27,7 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('Connected to the database successfully.');
 
-    await sequelize.sync({ alter: true}); 
+    await sequelize.sync(); 
     console.log('All models synchronized.');
 
     app.listen(port, () => {
