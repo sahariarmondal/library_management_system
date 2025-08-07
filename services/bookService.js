@@ -101,8 +101,7 @@ const addBookWithAuthors = async(bookDetails, authorsIds) => {
 
       for (let i = 0; i < quantity; i++) {
         bookCopies.push({
-          book_id: newBook.book_id,
-          copy_id: i+1
+          book_id: newBook.book_id
         });
       }
 

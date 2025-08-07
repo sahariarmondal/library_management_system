@@ -6,7 +6,11 @@ const BookAllocation = sequelize.define("BookAllocation", {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-    }, 
+    },
+    book_id:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
     copy_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

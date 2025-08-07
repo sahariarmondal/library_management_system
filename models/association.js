@@ -98,7 +98,6 @@ Student.hasMany(BookAllocation, {
 
 
 // BookCopy hasMany BookAllocation'
-
 BookAllocation.belongsTo(BookCopy, {
   foreignKey: 'copy_id',
   as: 'copy_allocation',
@@ -111,7 +110,17 @@ BookCopy.hasMany(BookAllocation, {
   as: 'allocation_copys'
 });
 
+BookAllocation.belongsTo(Book, {
+  foreignKey: 'book_id',
+  as: 'book_allocation',
+  onDelete: 'RESTRICT',
+  onUpdate: 'CASCADE'
+});
 
+Book.hasMany(BookAllocation, {
+  foreignKey: 'book_id',
+  as: 'allocation_books'
+});
 
 
 // Fines and book allocation and student relationship
