@@ -45,6 +45,11 @@ const Student = sequelize.define("Student", {
     type: DataTypes.ENUM('Active', 'Inactive'),
     allowNull: false,
   },
+  available_request_count: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 5
+  },
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,

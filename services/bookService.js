@@ -77,7 +77,9 @@ const updateBookById = async (id, updatedData) => {
 //FUNCTION TO ADD THE BOOKS WITH AUTHORS AND COPY ID WILL AUTOMATICALLY GENERATED
 const addBookWithAuthors = async(bookDetails, authorsIds) => {
   const t = await sequelize.transaction();
-
+  if(authorsIds.length === 0) {
+    throw new Error("Enter some valid author Ids");
+  }
   try{
     const newBook = await Book.create(bookDetails, {transaction: t});
 
@@ -87,7 +89,7 @@ const addBookWithAuthors = async(bookDetails, authorsIds) => {
       },
       transaction: t,
      });
-
+     
      if(authors.length !== authorsIds.length){
       throw new Error("Some Author Ids are Invalid or Duplicate Authors");
      }

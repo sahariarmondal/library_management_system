@@ -4,11 +4,11 @@ const { addBookController, getBookByTitleController, deleteBookByIdController, u
 const authenticate = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
-bookRouter.get("/get", authenticate, authorizeRoles("admin"), getBookByTitleController);
-bookRouter.post("/add", addBookController);
-bookRouter.delete("/:id",deleteBookByIdController);
-bookRouter.put("/:id",updateBookController);
-bookRouter.post("/addbook", addBookWithAuthorsController);
+bookRouter.get("/get",  getBookByTitleController);
+bookRouter.post("/add", authorizeRoles("admin"), addBookController);
+bookRouter.delete("/:id", authorizeRoles("admin"), deleteBookByIdController);
+bookRouter.put("/:id", authorizeRoles("admin"), updateBookController);
+bookRouter.post("/addbook", authorizeRoles("admin"), addBookWithAuthorsController);
 bookRouter.get("/get-by-title-autors", getBookByFullTitleWithAuthorsController);
 
 module.exports = bookRouter;
