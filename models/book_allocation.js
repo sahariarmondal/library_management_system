@@ -84,7 +84,7 @@ const BookAllocation = sequelize.define("BookAllocation", {
     },
     allocated_by: { // Admin ID
         type: DataTypes.INTEGER,
-        allowNull: true
+        allowNull: false
     }
 }, {
     tableName: "book_allocations",

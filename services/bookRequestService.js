@@ -19,7 +19,8 @@ const createBookRequestService = async (student_id, book_id) => {
     if (!book) {
       throw new Error("Book not found");
     }
-    if (book.available_quantity <= 0) {
+    if (!book.active) throw new Error("Book is not active");
+    if (book.available_copies <= 0) {
       throw new Error("Book is not available currently");
     }
 
@@ -71,10 +72,27 @@ const createBookRequestService = async (student_id, book_id) => {
 
     // 8. Decrease student available request count
     // Using instance method (student is a model instance)
-    await student.update(
-      { available_request_count: student.available_request_count - 1 },
-      { transaction: t }
-    );
+    // await student.update(
+    //   { available_request_count: student.available_request_count - 1 },
+    //   { transaction: t }
+    // );
+    // await Student.update(
+    //   {
+    //     available_request_count: sequelize.literal(
+    //       "available_request_count - 1"
+    //     ),
+    //   },
+    //   { where: { student_id }, transaction: t }
+    // );
+
+    // Reload the student row inside the same transaction
+    await student.reload({ transaction: t });
+
+    // Decrement in memory
+    student.available_request_count -= 1;
+
+    // Save changes
+    await student.save({ transaction: t });
 
     await t.commit();
     return bookRequest;

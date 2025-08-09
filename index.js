@@ -29,6 +29,7 @@ app.use('/api/transaction', transactionRouter );
 app.use('/api/book-request', bookRequestRouter);
 
 
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 })
@@ -39,6 +40,7 @@ const startServer = async () => {
     console.log('Connected to the database successfully.');
 
     // await sequelize.sync({force: true}); 
+    // await sequelize.sync({alter: true});
      await sequelize.sync(); 
     console.log('All models synchronized.');
 
