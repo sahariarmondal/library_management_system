@@ -13,6 +13,7 @@ const transactionRouter = require('./routes/transactionRouter.js');
 
 const authenticate = require('./middleware/authMiddleware.js');
 const bookRequestRouter = require('./routes/bookRequestRoute.js');
+const courseRouter = require('./routes/courseRouter.js');
 // const insertDummyData = require('./entry.js');
 
 app.use(express.json());
@@ -27,6 +28,7 @@ app.use('/api/author', authorRouter);
 app.use('/api/book-auth', bookAuthorRouter );
 app.use('/api/transaction', transactionRouter );
 app.use('/api/book-request', bookRequestRouter);
+app.use('/api/course', courseRouter);
 
 
 

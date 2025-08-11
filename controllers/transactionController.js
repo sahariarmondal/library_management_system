@@ -1,36 +1,6 @@
-// const  { issueBookToStudentService }   = require("../services/transactionService");
-
-// const issueBookController = async (req, res) => {
-//   try {
-//     const { student_id, book_id } = req.body;
-
-//     if (!student_id || !book_id) {
-//       return res.status(400).json({ error: "student_id and book_id are required" });
-//     }
-
-//     const allocation = await issueBookToStudentService(student_id, book_id);
-
-//     res.status(201).json({
-//       message: "Book issued successfully",
-//       allocation
-//     });
-
-//   } catch (error) {
-//     console.error("Book issue error:", error.message);
-//     res.status(400).json({ error: error.message });
-//   }
-// };
-
-// module.exports = {
-//   issueBookController
-// };
 
 
-// controllers/bookAllocationController.js
-
-
-const { issueBookService } = require("../services/transactionService");
-const { getStudentIdByUserId } = require("../services/studentService");
+const { issueBookService, returnBookService} = require("../services/transactionService");
 const { getAdminIdByUserId } = require("../services/adminService");
 
 const issueBookController = async (req, res) => {
@@ -62,4 +32,33 @@ const issueBookController = async (req, res) => {
   }
 };
 
-module.exports = { issueBookController };
+
+const returnBookController = async (req, res) => {
+  const { allocation_id, student_id } = req.body;
+
+  try {
+    if (!allocation_id || !student_id) {
+      return res.status(400).json({
+        success: false,
+        message: "allocation_id and student_id are required",
+      });
+    }
+
+    const updatedAllocation = await returnBookService(student_id, allocation_id);
+
+    res.status(200).json({
+      success: true,
+      message: "Book returned successfully",
+      data: updatedAllocation
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+
+
+module.exports = { issueBookController, returnBookController };

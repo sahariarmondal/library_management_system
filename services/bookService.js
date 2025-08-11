@@ -24,6 +24,56 @@ const addBook = async (data) => {
   return book;
 };
 
+const Book = require("../models/book");
+const BookCopy = require("../models/book_copy");
+
+const addBook = async (data) => {
+  const {
+    book_id,
+    title,
+    isbn,
+    genre,
+    published_year,
+    language,
+    total_copies,
+    available_copies
+  } = data;
+
+  if (!book_id || !title || !isbn || !genre) {
+    throw new Error("Required fields are missing");
+  }
+
+  // Fallback to defaults if not provided
+  const total = total_copies && total_copies > 0 ? total_copies : 1;
+  const available = available_copies && available_copies > 0 ? available_copies : total;
+
+  // 1. Create book record
+  const book = await Book.create({
+    book_id,
+    title,
+    isbn,
+    genre,
+    published_year,
+    language,
+    total_copies: total,
+    available_copies: available
+  });
+
+  // 2. Create book copies
+  const copiesToCreate = [];
+  for (let i = 1; i <= total; i++) {
+    copiesToCreate.push({
+      book_id: book.book_id,
+      copy_number: i, // sequential number
+      availability_status: i <= available ? "available" : "issued" // mark as available/issued
+    });
+  }
+
+  await BookCopy.bulkCreate(copiesToCreate);
+
+  return book;
+};
+
 //FUNCTION TO DELETE A BOOK BY ID
 const getBookByTitle = async (title) => {
   if (!title) {

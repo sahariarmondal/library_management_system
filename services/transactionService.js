@@ -60,7 +60,7 @@ const issueBookService = async (student_id, book_id, admin_id) => {
       transaction: t,
     });
     if (!book) throw new Error("Book not found");
-    if(!book.active) throw new Error("Book is not Active");
+    if (!book.active) throw new Error("Book is not Active");
     if (book.available_copies <= 0) {
       throw new Error("Book is currently not available");
     }
@@ -119,4 +119,83 @@ const issueBookService = async (student_id, book_id, admin_id) => {
   }
 };
 
-module.exports = { issueBookService };
+// services/transactionService.js
+const returnBookService = async (student_id, allocation_id) => {
+  const t = await sequelize.transaction();
+
+  // fine rate per day
+  const FINE_PER_DAY = 10;
+
+  try {
+    // 1. Find allocation
+    const allocation = await BookAllocation.findOne({
+      where: { allocation_id, student_id, status: "issued" },
+      transaction: t,
+    });
+
+    if (!allocation) {
+      throw new Error("No issued book allocation found for this student");
+    }
+
+    const { book_id, copy_id, due_date } = allocation;
+    const currentDate = new Date();
+
+    // 2. Check overdue and create fine if needed
+    if (currentDate > due_date) {
+      const daysOverdue = Math.ceil(
+        (currentDate - due_date) / (1000 * 60 * 60 * 24)
+      );
+      const fineAmount = daysOverdue * FINE_PER_DAY;
+
+      await Fine.create(
+        {
+          student_id,
+          allocation_id,
+          amount: fineAmount,
+          reason: `Overdue by ${daysOverdue} days`,
+          is_paid: false,
+        },
+        { transaction: t }
+      );
+    }
+
+    // 3. Update BookCopy
+    await BookCopy.update(
+      { availability_status: "available" },
+      { where: { copy_id }, transaction: t }
+    );
+
+    // 4. Increment available copies in Book
+    const book = await Book.findOne({ where: { book_id }, transaction: t });
+    await book.update(
+      { available_copies: book.available_copies + 1 },
+      { transaction: t }
+    );
+
+    // 5. Delete request entry
+    await BookRequest.destroy({
+      where: { student_id, book_id },
+      transaction: t,
+    });
+
+    // 6. Update allocation to returned
+    await allocation.update(
+      { status: "returned", return_date: currentDate },
+      { transaction: t }
+    );
+
+    // 7. Increase the available_request_count for the student
+    await Student.increment(
+      { available_request_count: 1 },
+      { where: { student_id }, transaction: t }
+    );
+
+    await t.commit();
+    return allocation;
+  } catch (error) {
+    await t.rollback();
+    throw error;
+  }
+};
+
+module.exports = { issueBookService, returnBookService };
